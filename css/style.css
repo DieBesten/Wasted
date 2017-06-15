@@ -48,11 +48,19 @@ body {
 	background: #212229;
 }
 
+canvas {
+	width: 1536px;
+    height: 794px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
 /* Sidebar left */
 
 .logo {
 	background: #212229;
-	height: 130px;
+	height: 124px;
 	width: 100%;
 }
 
@@ -84,7 +92,7 @@ body {
 /* Content */
 
 .days {
-	margin-top: 130px;
+	margin-top: 124px;
 }
 
 .day {
