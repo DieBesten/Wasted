@@ -1,8 +1,110 @@
+/* 
+
+	rot: #DE5242;
+	hellblau: #212229;
+	dunkelblau: #1D1D24;
+	noch helleres blau: #383847;
+
+*/
+
+* {
+	box-sizing: border-box;
+}
+
 html, body {
 	padding: 0;
 	margin: 0;
+	font-family: 'Roboto', sans-serif;
 }
 
 body {
 	background: black;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+/* Layout */
+
+.s_left {
+	float: left;
+	height: 100%;
+	width: 12%;
+	background: #212229;
+	box-shadow: 0 0 10 10 black;
+}
+
+.content {
+	float: left;
+	height: 100%;
+	width: 76%;
+	background: #1D1D24;
+}
+
+.s_right {
+	float: right;
+	height: 100%;
+	width: 12%;
+	background: #212229;
+}
+
+/* Sidebar left */
+
+.logo {
+	background: #212229;
+	height: 130px;
+	width: 100%;
+}
+
+.modi {
+	height: 80px;
+	width: 100%;
+	text-align: center;
+	line-height: 80px;
+	color: white;
+	font-size: 1.6em;
+}
+
+.modi_left {
+	float: left;
+	width: 50%;
+	height: 100%;
+	padding: 28px;
+	background: #383847;
+}
+
+.modi_right {
+	float: right;
+	width: 50%;
+	background: #DE5242;
+	height: 100%;
+	padding: 28px;
+}
+
+/* Content */
+
+.days {
+	margin-top: 130px;
+}
+
+.day {
+	width: 90%;
+	height: 120px;
+	margin: 4px 5%;
+	background: #212229;
+}
+
+.label {
+	transform: rotate(-90deg);
+    transform-origin: right top 0;
+    float: left;
+    height: 16px;
+    padding: 0 8;
+    line-height: 16px;
+    color: white;
+    margin-left: -143px;
+    width: 120px;
+    font-size: 0.9em;
+    background: #383847;
+    font-weight: 100;
 }
