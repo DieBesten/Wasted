@@ -79,14 +79,22 @@ body {
 }
 
 .button {
-  width: 100%;
-	margin: 50%;
+  width: 175px;
+	margin: auto;
   color: white;
   padding: 15px;
   background: #DE5242;
   color: #ECECEC;
   font-size: 1.2em;
-
+  display: block;
+  text-align: center;
+  transition: all 0.2s;
   align-items: center;
   justify-content: center;
+  border-radius: 10px;
+}
+
+.button:hover {
+  border-radius: 20px;
+  transition: all 0.2s;
 }

@@ -18,7 +18,7 @@ class Dia{
 		}
 		vertex(this.day.x + progress, (this.day.y + this.day.height) - stress);
 		vertex(this.day.x + progress, (this.day.y + this.day.height));
-		console.log(progress);
+		// console.log(progress);
 		endShape(CLOSE);
 	}
 

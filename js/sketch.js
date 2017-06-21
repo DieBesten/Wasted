@@ -22,6 +22,8 @@ var diaTest;
 var pxProMinute;
 var progress;
 
+var playing;
+
 var setup = function(){
 	createCanvas(windowWidth, windowHeight);
 	background(255, 255, 255, 0);
@@ -40,6 +42,9 @@ var setup = function(){
 	for(var i = 1; i < 6; i++){
 		days.push(new Day(x, 124 * i, w, 120, dayLabels[i-1], c_lightblue, c_verylightblue));
 	}
+
+	// Simulation playing
+	playing = false;
 
 	// Declare variables for the timeline
 	timeStart = 8;
@@ -82,6 +87,7 @@ var draw = function(){
 
 	diaTest.draw(progress, stress);
 
+	// Draw the Timeline
 	timeLine();
 }
 
@@ -100,18 +106,20 @@ var timeLine = function(){
 
 	// Zeitberrechnung
 
-	if(currentTimeHours < timeEnd){		
-		if(currentTimeMinutes < 60){
-			currentTimeMinutes += 1;
+	if(playing){
+		if(currentTimeHours < timeEnd){		
+			if(currentTimeMinutes < 60){
+				currentTimeMinutes += 1;
+			} else {
+				currentTimeMinutes = 0;
+				currentTimeHours++;
+				diaTest.addData(stress);
+			}
 		} else {
+			timeLineReset();
+			currentTimeHours = timeStart;
 			currentTimeMinutes = 0;
-			currentTimeHours++;
-			diaTest.addData(stress);
 		}
-	} else {
-		timeLineReset();
-		currentTimeHours = timeStart;
-		currentTimeMinutes = 0;
 	}
 
 	timeLineStrahl(x + progress, 107);
@@ -147,5 +155,12 @@ var timeLineReset = function(){
 	} else {
 		currentDay = 0;
 		days[days.length-1].backgroundLabel = c_verylightblue;
+	}
+}
+
+var leftSidebar = function(){
+	// play Button
+	if(dist(mouseX, mouseY, width / 100 * 9, 164) < 40){
+		
 	}
 }
