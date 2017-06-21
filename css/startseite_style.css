@@ -21,10 +21,12 @@ body {
 }
 
 .logo {
+	background: url("../Bilder/wastedLogoRot.png");
   float: left;
-  background: #555561;
   height: 50px;
-  width: 120px;
+  width: 140px;
+	background-size: 100%;
+	background-repeat: no-repeat;
 }
 
 .upperHeader {
