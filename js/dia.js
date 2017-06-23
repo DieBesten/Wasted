@@ -6,9 +6,15 @@ class Dia{
 		this.distance = distance;
 		this.c_Stroke = c_Stroke;
 		this.c_Fill = c_Fill;
+		this.finished = false;
 	}
 
-	draw(progress, stress){
+	draw(progress, value){
+		// 224 = max height of diagram
+		value = value / 112 * 100;
+		if(this.finished == true){
+			progress = this.day.width;	
+		}
 		if(this.type == 0){
 
 			// TYPE 0 --> Filled, no Stroke
@@ -18,9 +24,9 @@ class Dia{
 			beginShape();
 			vertex(this.day.x, this.day.y + this.day.height);
 			for(var i = 0; i < this.data.length; i++){
-				vertex(this.day.x + this.distance * (i + 1), (this.day.y + this.day.height) - this.data[i]);	
+				vertex(this.day.x + this.distance * (i), (this.day.y + this.day.height) - this.data[i]);	
 			}
-			vertex(this.day.x + progress, (this.day.y + this.day.height) - stress);
+			vertex(this.day.x + progress, (this.day.y + this.day.height) - value);
 			vertex(this.day.x + progress, (this.day.y + this.day.height));
 			// console.log(progress);
 			endShape(CLOSE);
@@ -33,9 +39,9 @@ class Dia{
 			beginShape();
 			vertex(this.day.x, this.day.y + this.day.height);
 			for(var i = 0; i < this.data.length; i++){
-				vertex(this.day.x + this.distance * (i + 1), (this.day.y + this.day.height) - this.data[i]);	
+				vertex(this.day.x + this.distance * (i), (this.day.y + this.day.height) - this.data[i]);	
 			}
-			vertex(this.day.x + progress, (this.day.y + this.day.height) - stress);
+			vertex(this.day.x + progress, (this.day.y + this.day.height) - value);
 			vertex(this.day.x + progress, (this.day.y + this.day.height));
 			// console.log(progress);
 			endShape(CLOSE);
@@ -46,9 +52,9 @@ class Dia{
 			beginShape();
 			vertex(this.day.x, this.day.y + this.day.height);
 			for(var i = 0; i < this.data.length; i++){
-				vertex(this.day.x + this.distance * (i + 1), (this.day.y + this.day.height) - this.data[i]);	
+				vertex(this.day.x + this.distance * (i), (this.day.y + this.day.height) - this.data[i]);	
 			}
-			vertex(this.day.x + progress, (this.day.y + this.day.height) - stress);
+			vertex(this.day.x + progress, (this.day.y + this.day.height) - value);
 			vertex(this.day.x + progress, (this.day.y + this.day.height));
 			// console.log(progress);
 			endShape();
@@ -57,5 +63,9 @@ class Dia{
 
 	addData(data){
 		this.data.push(data);
+	}
+
+	end(){
+		this.finished = true;
 	}
 }

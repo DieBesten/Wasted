@@ -19,6 +19,9 @@ var wertDesMitarbeiters;
 var gehalt;
 var ablenkung;
 
+// vom Tag vorher
+var oldStress;
+
 // x, y, width, height, label, background, backgroundLabel
 var days;
 var dayLabels;
@@ -58,7 +61,7 @@ var setup = function(){
 
 	// Simulation playing
 	playing = false;
-	editMode = false;
+	editMode = true;
 
 	// Declare variables for the timeline
 	timeStart = 8;
@@ -77,7 +80,8 @@ var setup = function(){
 	krankheitstage = 0;
 	gehalt = 21 * 8;
 	wertDesMitarbeiters = gehalt * 4.29;
-	ablenkung = 100;
+	ablenkung = 0;
+	oldStress = 0;
 
 	pxProMinute = w / 540;
 	progress = ((currentTimeHours - 8) * pxProMinute * 60) + (currentTimeMinutes * pxProMinute);
@@ -89,9 +93,12 @@ var setup = function(){
 	stressArray.push(new Dia(days[currentDay], 0, c_red, c_red, w / 540 * 60));
 	productivityArray.push(new Dia(days[currentDay], 1, 255, c_red, w / 540 * 60));
 
+	stressArray[currentDay].addData(stress);
+	productivityArray[currentDay].addData(productivity);
+
 	// SRM Array
 	srmArray = [];
-	srmArray.push(new Srm(1, width / 100 * 6 - 56, height / 2, "Yoga"));
+	srmArray.push(new Srm(1, width / 100 * 6 - 56, height / 2, "Yoga", days));
 
 }
 
@@ -115,13 +122,18 @@ var draw = function(){
 	// Draw the diagrams
 	if(currentDay >= 1){
 		for(var i = 0; i < stressArray.length; i++){
-			stressArray[i].draw(progress, stress);
+			stressArray[i].draw(progress, stress - 100);
 			productivityArray[i].draw(progress, productivity);
 		}
 	}
 
+	text(stress, width / 2, 20);
+
 	// Draw the timeline
 	timeLine();
+
+	// Draw the right sidebar
+	rightSidebar();
 
 	// Draw the left sidebar
 	leftSidebar();
@@ -155,7 +167,7 @@ var timeLine = function(){
 			} else {
 				currentTimeMinutes = 0;
 				currentTimeHours++;
-				stressArray[currentDay-1].addData(stress);
+				stressArray[currentDay-1].addData(stress - 100);
 				productivityArray[currentDay-1].addData(productivity);
 			}
 		} else {
@@ -166,6 +178,7 @@ var timeLine = function(){
 	}
 
 	text(round(verlust), width / 2, 100);
+	ellipse(width / 2, 50, round(frameRate()), round(frameRate()));
 
 	timeLineStrahl(x + progress, 107);
 }
@@ -186,11 +199,17 @@ var timeLineStrahl = function(x, y){
 
 	// productivity
 	fill(255);
-	ellipse(x, ((y + 126) - productivity) + 10, 10, 10);
+	ellipse(x, ((y + 126) - (productivity) / 112 * 100) + 10 + ((currentDay - 1) * 124), 10, 10);
 
 	// stress
 	fill(c_red);
-	ellipse(x, ((y + 126) - stress) + 10, 10, 10);
+	ellipse(x, ((y + 126) - ((stress - 100) / 112 * 100)) + 10 + ((currentDay - 1) * 124), 10, 10);
+
+	// indicatior text
+
+	fill(255);
+	text("Produktiviät: " + productivity + "%", x, ((y + 126) - (productivity) / 112 * 100) + 10 + ((currentDay - 1) * 124));
+	text("Stress: " + round(stress - 100) + "%", x, ((y + 126) - ((stress - 100) / 112 * 100)) + 10 + ((currentDay - 1) * 124));
 }
 
 var timeLineReset = function(){
@@ -207,10 +226,18 @@ var timeLineReset = function(){
 			days[currentDay-1].backgroundLabel = c_verylightblue;
 		}		
 		currentDay++;
+		oldStress += stress;
 		// NEXT DAY --> New Diagrams
-		if(currentDay >= 1){
-			stressArray.push(new Dia(days[currentDay], 0, c_red, c_red, w / 540 * 60));
-		productivityArray.push(new Dia(days[currentDay], 1, 255, c_red, w / 540 * 60));
+		if(currentDay > 1){
+			// finish the old diagram
+			stressArray[currentDay-2].end();
+			productivityArray[currentDay-2].end();
+			// create new diagrams for the next day
+			stressArray.push(new Dia(days[currentDay-1], 0, c_red, c_red, w / 540 * 60));
+			productivityArray.push(new Dia(days[currentDay-1], 1, 255, c_red, w / 540 * 60));
+			// Start values for the new day
+			stressArray[currentDay-1].addData(stress);
+			productivityArray[currentDay-1].addData(productivity);
 		}
 	} else {
 		currentDay = 0;
@@ -226,6 +253,7 @@ var leftSidebar = function(){
 	// play Button
 	if(dist(mouseX, mouseY, width / 100 * 9, 164) < 40 && mouseIsPressed){
 		playing = true;
+		editMode = false;
 	}
 	// edit Button
 	if(dist(mouseX, mouseY, width / 100 * 3, 164) < 40 && mouseIsPressed){
@@ -235,17 +263,45 @@ var leftSidebar = function(){
 
 	// Edit Mode
 
-	if(editMode){
-		for(var i = 0; i < srmArray.length; i++){
-			srmArray[i].draw();
-		}
+	for(var i = 0; i < srmArray.length; i++){
+		srmArray[i].draw();
 	}
+}
+
+var rightSidebar = function(){
+	fill(c_lightblue);
+	rect(width / 100 * 88, 0, width / 100 * 12, height);
+
+	// Marks
+
+	stroke(c_verylightblue);
+	for(var i = 0; i < 10; i++){
+		line(width / 100 * 89, height / 10 * i, width / 100 * 99, height / 10 * i);
+	}
+	noStroke();
+
+	// Water
+	fill(c_red.levels[0], c_red.levels[1], c_red.levels[2], 200);
+	rect(width / 100 * 88, height - verlust / 100, width / 100 * 12, verlust / 100);
 }
 
 var calculation = function(){
 	// Produktiviät = -28% bei 100% Ablenkung
 	productivity = 100 - (ablenkung / 100 * 28);
-	stress = 100 - (ablenkung / 100 * 60);
+	// Stress erhöht sich je länger der Tag geht, 200 ist das maximale Stresslevel
+	if(stress < 200){
+		stress = (100 - (ablenkung / 100 * 60)) + ((currentTimeHours * 60 + currentTimeMinutes) / 20) + random(0,1) + oldStress;
+	} else {
+		stress = 200;
+	}
 	krankheitstage = (stress * 2) / 365;
 	verlust += (((krankheitstage * wertDesMitarbeiters * productivity)) * mitarbeiter) / 24 / 60;
+}
+
+var mouseReleased = function(){
+	// reset drag and drop stuff
+	for(var i = 0; i < srmArray.length; i++){
+		srmArray[i].dragging = false;
+		srmArray[i].changingDuration = false;
+	}
 }

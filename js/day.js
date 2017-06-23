@@ -19,6 +19,7 @@ class Day{
 		push();
 		translate(this.x + 12, this.y + 112);
 		rotate(radians(-90));
+		textSize(12);
 		text(this.label, 0, 0);
 		pop();
 

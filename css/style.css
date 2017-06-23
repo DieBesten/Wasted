@@ -62,6 +62,9 @@ canvas {
 	background: #212229;
 	height: 124px;
 	width: 100%;
+	color: white;
+	text-align: center;
+	line-height: 124px;
 }
 
 .modi {
