@@ -11,6 +11,7 @@ html, body {
 	padding: 0;
 	margin: 0;
 	font-family: 'Roboto', sans-serif;
+	overflow-y:scroll; /*Page scrollbar machen */
 }
 
 body {
@@ -67,12 +68,13 @@ body {
 
   color: #555561;
   font-size: 1.5em;
-  font-family: 'open-sans';
+  font-family: 'roboto';
   text-align: left;
   vertical-align: middle
 }
 
 .button {
+	text-decoration: none;
   width: 175px;
 	margin: auto;
   color: white;
@@ -91,4 +93,54 @@ body {
 .button:hover {
   border-radius: 20px;
   transition: all 0.2s;
+}
+
+.dasProjekt {
+	display: flex;
+	flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.überschriftDasProjekt {
+	text-decoration: underline;
+	text-decoration-color: #DE5242;
+	text-align: center;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #555561;
+  font-size: 1.5em;
+  font-family: 'roboto';
+}
+
+.inhaltDasProjekt {
+  width: 100%;
+	padding-top: 30px;
+	padding-bottom: 30px;
+  display: flex;
+	flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  color: #555561;
+  font-size: 1.5em;
+  font-family: 'roboto';
+  text-align: left;
+  vertical-align: middle
+}
+
+.titelBild {
+	padding-top: 30px;
+	text-align: center;
+	width: 100%;
+	height: 100%;
+	background: #CECED0;
+}
+
+.gruppenbild {
+	margin-top: -40px;
+	padding-bottom: 0px;
 }
