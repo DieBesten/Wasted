@@ -23,15 +23,31 @@ class Srm{
 		this.onDay = false;
 		this.placed = false;
 
+		this.x = (width / 100 * 12) + ((width / 100 * 76) / 100 * 5);
+		this.w = width - (x * 2);
+
+		this.startTime = round((this.position.x - x) / pxProMinute);
+		this.endTime = round((this.position.x - x + this.duration) / pxProMinute);
+
+		// only 1 new srm when clicked
+		this.done = false;
+
 		// Set influences based on type
 		// 1: Yoga
 		// 2: Sport
 		// 3: Social Media Blocking
 		// 4: Email Begrenzung
 		switch(this.type){
+			case 0:				
+				break;
 			case 1:
 				break;
 		}
+	}
+
+	calculateTime(){
+		this.startTime = round((this.position.x - this.x) / pxProMinute);
+		this.endTime = round((this.position.x - this.x + this.duration) / pxProMinute);
 	}
 
 	draw(){
@@ -43,25 +59,94 @@ class Srm{
 		}
 
 		// SRM itself
-		fill(255);
+		if(this.type != 0){			
+			fill(255);
+		} else {
+			fill(c_verylightblue);
+		}
+		if(this.onDay == false && this.type != 0){
+			fill(255, 255, 255, 20);
+		}
 		rect(this.position.x, this.position.y, this.duration, 120);
-		textAlign(CENTER);
-		fill(0);
+		textAlign(CENTER);		
+		if(this.type != 0){			
+			fill(0);
+		} else {
+			fill(255);
+		}
 		textSize(18);
 		text(this.label, this.position.x + this.duration / 2, this.position.y + 70);
 
 		// duration interaction indicator
-		if(this.onDay){
+		if(this.onDay && editMode){
+			// Sides background
 			fill(c_verylightblue);
 			rect(this.position.x, this.position.y, 16, 120);			
 			rect(this.position.x + this.duration - 16, this.position.y, 16, 120);
+			// Handles
 			fill(255);
-			rect(this.position.x + 4, this.position.y + 30, 2, 60);
-			rect(this.position.x + 8, this.position.y + 30, 2, 60);
-			rect(this.position.x + this.duration - 4, this.position.y + 30, 2, 60);
-			rect(this.position.x + this.duration - 8, this.position.y + 30, 2, 60);
+			// Left			
+			rect(this.position.x + 4, this.position.y + 30, 1, 60);
+			rect(this.position.x + 8, this.position.y + 30, 1, 60);
+			// Right
+			rect(this.position.x + this.duration - 6, this.position.y + 30, 1, 60);
+			rect(this.position.x + this.duration - 10, this.position.y + 30, 1, 60);
+
+			// Arrows			
+			fill(c_red);
+			triangle(this.position.x, this.position.y + 115, this.position.x + 8, this.position.y + 108, this.position.x + 16, this.position.y + 115);
+			triangle(this.position.x + this.duration - 16, this.position.y + 115, this.position.x + this.duration - 8, this.position.y + 108, this.position.x + this.duration, this.position.y + 115);
+
+			// Border
+			rect(this.position.x, this.position.y + 115, this.duration, 5);
+
+			// Time
+			textSize(10);
+			fill(c_blue);
+			textAlign(LEFT);
+			// Start
+			var m = this.startTime % 60;
+			var h = 8 + round(this.startTime / 60);
+			var t = 0;
+			if(m < 10){
+				if(h < 10){
+					t = "0" + h + ":0" + (this.startTime % 60);
+				} else {
+					t = h + ":0" + (this.startTime % 60);
+				}
+			} else {
+				if(h < 10){
+					t = "0" + h + ":" + (this.startTime % 60);
+				} else {
+					t = h + ":" + (this.startTime % 60);
+				}
+			}
+			text(t, this.position.x + 18, this.position.y + 110);
+			// End
+			textAlign(RIGHT);
+			m = this.endTime % 60;
+			h = 8 + round(this.endTime / 60);
+			t = 0;
+			if(m < 10){
+				if(h < 10){
+					t = "0" + h + ":0" + (this.endTime % 60);
+				} else {
+					t = h + ":0" + (this.endTime % 60);
+				}
+			} else {
+				if(h < 10){
+					t = "0" + h + ":" + (this.endTime % 60);
+				} else {
+					t = h + ":" + (this.endTime % 60);
+				}
+			}
+			text(t, this.position.x + this.duration -  18, this.position.y + 110);
 		}
 
+		// Disable functionality if type 0 --> sidebar
+		if(this.type != 0){
+
+		this.calculateTime();
 		// Drag and Drop
 
 		// Increase duration
@@ -71,12 +156,15 @@ class Srm{
 				this.changingDuration = true;
 				this.cdSide = 0;
 				// increase - decrease
-				if(pmouseX > mouseX){
-					this.position.x = mouseX;
-					this.duration += pmouseX - mouseX;
-				} else {
-					this.position.x = mouseX;
-					this.duration -= mouseX - pmouseX;
+				// if mouse is not outside of the day
+				if(mouseX > this.x + 16 && mouseX < width - this.x - 16){
+					if(pmouseX > mouseX){
+						this.position.x = mouseX;
+						this.duration += pmouseX - mouseX;
+					} else {
+						this.position.x = mouseX;
+						this.duration -= mouseX - pmouseX;
+					}
 				}
 			} else
 			// Right side
@@ -84,10 +172,12 @@ class Srm{
 				this.changingDuration = true;
 				this.cdSide = 1;
 				// increase - decrease
-				if(pmouseX < mouseX){
-					this.duration += mouseX - pmouseX;
-				} else {
-					this.duration -= pmouseX - mouseX;
+				if(mouseX > this.x + 16 && mouseX < width - this.x - 16){
+					if(pmouseX < mouseX){
+						this.duration += mouseX - pmouseX;
+					} else {
+						this.duration -= pmouseX - mouseX;
+					}
 				}
 			}
 		}
@@ -107,6 +197,7 @@ class Srm{
 			if(((this.position.x + 60) < (width / 100 * 12) + ((width / 100 * 76) / 100 * 5))){
 				this.position.x = mouseX - this.duration / 2;
 				this.position.y = mouseY - 60;
+				this.onDay = false;
 			} else {
 				// Find nearest day
 				if(this.day == null){
@@ -120,6 +211,15 @@ class Srm{
 					this.position.x = mouseX - this.duration / 2;
 				}
 				this.onDay = true;
+			}
+		}
+
+		} else {
+			if(mouseX > this.position.x + 16 && mouseX < this.position.x + this.duration - 16 && mouseY > this.position.y && mouseY < this.position.y + 112 && mouseIsPressed && this.done == false){
+				srmArray.push(new Srm(1, mouseX - 60, mouseY - 60, this.label, days));
+				for(var i = 0; i < srmStash.length; i++){
+					srmStash[i].done = true;
+				}
 			}
 		}
 	}

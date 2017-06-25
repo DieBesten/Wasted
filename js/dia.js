@@ -20,7 +20,7 @@ class Dia{
 			// TYPE 0 --> Filled, no Stroke
 
 			fill(this.c_Fill);
-			stroke(this.c_Stroke);
+			noStroke();
 			beginShape();
 			vertex(this.day.x, this.day.y + this.day.height);
 			for(var i = 0; i < this.data.length; i++){

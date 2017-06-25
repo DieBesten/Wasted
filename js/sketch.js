@@ -40,6 +40,19 @@ var productivityArray;
 
 var srmArray;
 
+var srmStash;
+
+var isDragging;
+
+// fonts
+/*
+var f_Roboto;
+
+var preload = function() {
+   f_Roboto = loadFont('../assets/Roboto-Regular.ttf');
+}
+*/
+
 var setup = function(){
 	createCanvas(windowWidth, windowHeight);
 	background(255, 255, 255, 0);
@@ -98,8 +111,18 @@ var setup = function(){
 
 	// SRM Array
 	srmArray = [];
+	/*
 	srmArray.push(new Srm(1, width / 100 * 6 - 56, height / 2, "Yoga", days));
+	srmArray.push(new Srm(2, width / 100 * 6 - 56, height / 2 + 128, "Sport", days));
+	srmArray.push(new Srm(3, width / 100 * 6 - 56, height / 2 + 128 * 2, "SMB", days));
+	*/
 
+	srmStash = [];
+	srmStash.push(new Srm(0, width / 100 * 6 - 56, height / 2, "Yoga", days));
+	srmStash.push(new Srm(0, width / 100 * 6 - 56, height / 2 + 128, "Sport", days));
+	srmStash.push(new Srm(0, width / 100 * 6 - 56, height / 2 + 128 * 2, "SMB", days));
+
+	isDragging = false;
 }
 
 var draw = function(){
@@ -119,6 +142,12 @@ var draw = function(){
 		days[i].draw();
 	}
 
+	if(playing){
+		for(var i = 0; i < srmArray.length; i++){
+			srmArray[i].draw();
+		}
+	}
+
 	// Draw the diagrams
 	if(currentDay >= 1){
 		for(var i = 0; i < stressArray.length; i++){
@@ -127,6 +156,7 @@ var draw = function(){
 		}
 	}
 
+	textSize(12);
 	text(stress, width / 2, 20);
 
 	// Draw the timeline
@@ -263,8 +293,13 @@ var leftSidebar = function(){
 
 	// Edit Mode
 
-	for(var i = 0; i < srmArray.length; i++){
-		srmArray[i].draw();
+	if(editMode){
+		for(var i = 0; i < srmStash.length; i++){
+			srmStash[i].draw();
+		}
+		for(var i = 0; i < srmArray.length; i++){
+			srmArray[i].draw();
+		}
 	}
 }
 
@@ -291,17 +326,30 @@ var calculation = function(){
 	// Stress erhöht sich je länger der Tag geht, 200 ist das maximale Stresslevel
 	if(stress < 200){
 		stress = (100 - (ablenkung / 100 * 60)) + ((currentTimeHours * 60 + currentTimeMinutes) / 20) + random(0,1) + oldStress;
+		if(stress > 200){
+			stress = 200;
+		}
 	} else {
 		stress = 200;
 	}
 	krankheitstage = (stress * 2) / 365;
 	verlust += (((krankheitstage * wertDesMitarbeiters * productivity)) * mitarbeiter) / 24 / 60;
+
+	for(var i = 0; i < srmArray.length; i++){
+		if(progress > srmArray[i].timeStart)
+	}
 }
 
 var mouseReleased = function(){
 	// reset drag and drop stuff
 	for(var i = 0; i < srmArray.length; i++){
-		srmArray[i].dragging = false;
-		srmArray[i].changingDuration = false;
+		if(srmArray[i].dragging == true && srmArray[i].onDay == false){
+			srmArray.splice(i, 1);
+		} else {
+			srmArray[i].dragging = false;			
+			srmArray[i].changingDuration = false;
+		}
+		srmStash[i].done = false;
 	}
+	isDragging = false;
 }
