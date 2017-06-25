@@ -336,7 +336,9 @@ var calculation = function(){
 	verlust += (((krankheitstage * wertDesMitarbeiters * productivity)) * mitarbeiter) / 24 / 60;
 
 	for(var i = 0; i < srmArray.length; i++){
-		if(progress > srmArray[i].timeStart)
+		if(progress > srmArray[i].timeStart){
+			// Einfluss von SRM auf die Rechnung
+		}
 	}
 }
 
