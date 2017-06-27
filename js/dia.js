@@ -43,7 +43,6 @@ class Dia{
 			}
 			vertex(this.day.x + progress, (this.day.y + this.day.height) - value);
 			vertex(this.day.x + progress, (this.day.y + this.day.height));
-			// console.log(progress);
 			endShape(CLOSE);
 
 			// Top Stroke
@@ -56,7 +55,6 @@ class Dia{
 			}
 			vertex(this.day.x + progress, (this.day.y + this.day.height) - value);
 			vertex(this.day.x + progress, (this.day.y + this.day.height));
-			// console.log(progress);
 			endShape();
 		}
 	}

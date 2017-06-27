@@ -54,7 +54,11 @@ class Srm{
 
 		// Border
 		if(this.onDay){
-			fill(c_blue);
+			if(this.dragging){
+				fill(255,255,255, 0);
+			} else {
+				fill(c_blue);
+			}				
 			rect(this.position.x - 4, this.position.y, this.duration + 8, 120);
 		}
 
@@ -63,6 +67,9 @@ class Srm{
 			fill(255);
 		} else {
 			fill(c_verylightblue);
+		}
+		if(this.dragging){
+			fill(255,255,255, 200);
 		}
 		if(this.onDay == false && this.type != 0){
 			fill(255, 255, 255, 20);
@@ -86,11 +93,11 @@ class Srm{
 			// Handles
 			fill(255);
 			// Left			
-			rect(this.position.x + 4, this.position.y + 30, 1, 60);
-			rect(this.position.x + 8, this.position.y + 30, 1, 60);
+			rect(this.position.x + 4, this.position.y + 44, 1, 24);
+			rect(this.position.x + 8, this.position.y + 44, 1, 24);
 			// Right
-			rect(this.position.x + this.duration - 6, this.position.y + 30, 1, 60);
-			rect(this.position.x + this.duration - 10, this.position.y + 30, 1, 60);
+			rect(this.position.x + this.duration - 6, this.position.y + 44, 1, 24);
+			rect(this.position.x + this.duration - 10, this.position.y + 44, 1, 24);
 
 			// Arrows			
 			fill(c_red);

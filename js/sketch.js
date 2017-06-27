@@ -1,3 +1,5 @@
+p5.disableFriendlyErrors = true;
+
 var c_red;
 var c_blue;
 var c_lightblue;
@@ -43,6 +45,8 @@ var srmArray;
 var srmStash;
 
 var isDragging;
+
+var ablenkungen;
 
 // fonts
 /*
@@ -92,7 +96,7 @@ var setup = function(){
 	mitarbeiter = 1;
 	krankheitstage = 0;
 	gehalt = 21 * 8;
-	wertDesMitarbeiters = gehalt * 4.29;
+	wertDesMitarbeiters = gehalt * 4.29 / 8 / 60;
 	ablenkung = 0;
 	oldStress = 0;
 
@@ -123,6 +127,8 @@ var setup = function(){
 	srmStash.push(new Srm(0, width / 100 * 6 - 56, height / 2 + 128 * 2, "SMB", days));
 
 	isDragging = false;
+
+	ablenkungen = [];
 }
 
 var draw = function(){
@@ -154,6 +160,10 @@ var draw = function(){
 			stressArray[i].draw(progress, stress - 100);
 			productivityArray[i].draw(progress, productivity);
 		}
+	}
+
+	for(var i = 0; i < ablenkungen.length; i++){
+		ablenkungen[i].draw();
 	}
 
 	textSize(12);
@@ -208,7 +218,10 @@ var timeLine = function(){
 	}
 
 	text(round(verlust), width / 2, 100);
+
+	/*
 	ellipse(width / 2, 50, round(frameRate()), round(frameRate()));
+	*/
 
 	timeLineStrahl(x + progress, 107);
 }
@@ -222,8 +235,13 @@ var timeLineStrahl = function(x, y){
 	line(x, 107, x, 107 + (5 * 126));
 	noStroke();
 
-	textAlign("CENTER");
+	// CURRENT TIME
+	textAlign(LEFT);
 	text(currentTimeHours + ":" + currentTimeMinutes, x - 12, y - 5);
+
+	// TIME START
+
+	
 
 	// indicators
 
@@ -237,6 +255,7 @@ var timeLineStrahl = function(x, y){
 
 	// indicatior text
 
+	textAlign(LEFT);
 	fill(255);
 	text("Produktiviät: " + productivity + "%", x, ((y + 126) - (productivity) / 112 * 100) + 10 + ((currentDay - 1) * 124));
 	text("Stress: " + round(stress - 100) + "%", x, ((y + 126) - ((stress - 100) / 112 * 100)) + 10 + ((currentDay - 1) * 124));
@@ -266,6 +285,7 @@ var timeLineReset = function(){
 			stressArray.push(new Dia(days[currentDay-1], 0, c_red, c_red, w / 540 * 60));
 			productivityArray.push(new Dia(days[currentDay-1], 1, 255, c_red, w / 540 * 60));
 			// Start values for the new day
+			stress = 0;
 			stressArray[currentDay-1].addData(stress);
 			productivityArray[currentDay-1].addData(productivity);
 		}
@@ -315,25 +335,47 @@ var rightSidebar = function(){
 	}
 	noStroke();
 
+	// Line --> Wie viel könnte erarbeitet werden
+	fill(255);
+	var potentiellerGewinn = wertDesMitarbeiters * (currentTimeHours - 8) * 60 + currentTimeMinutes;
+	textAlign(CENTER);
+	text(potentiellerGewinn, width / 100 * 94, 120);
+
 	// Water
 	fill(c_red.levels[0], c_red.levels[1], c_red.levels[2], 200);
-	rect(width / 100 * 88, height - verlust / 100, width / 100 * 12, verlust / 100);
+	var y = height - ((verlust / potentiellerGewinn * 100)) / 100 * 28;
+	rect(width / 100 * 88, y, width / 100 * 12, 100);
 }
 
 var calculation = function(){
-	// Produktiviät = -28% bei 100% Ablenkung
-	productivity = 100 - (ablenkung / 100 * 28);
+
+	// Zufällige Ablenkung --> Ca alle 20 Minuten?
+	var newDistraction = round(random(0,20));
+	if(newDistraction >= 19){
+		if(currentDay >= 1){
+			ablenkungen.push(new Ablenkung(days[currentDay-1].x + progress, days[currentDay - 1].y + days[currentDay-1].height - (productivity / 120 * 100)));
+		}
+		productivity = 0;
+	}
+
+	// Produktiviät = -28% bei 100% Ablenkung	
+	//productivity = 100 - (ablenkung / 100 * 28);
+	if(productivity < 100){
+		// 20 Minuten um wieder voll produktiv zu sein
+		productivity += 5;
+	}
 	// Stress erhöht sich je länger der Tag geht, 200 ist das maximale Stresslevel
 	if(stress < 200){
-		stress = (100 - (ablenkung / 100 * 60)) + ((currentTimeHours * 60 + currentTimeMinutes) / 20) + random(0,1) + oldStress;
+		stress = (100 - (ablenkung / 100 * 60)) + ((currentTimeHours * 60 + currentTimeMinutes) / 20) + random(0,1) + (oldStress / 10);
 		if(stress > 200){
 			stress = 200;
 		}
 	} else {
 		stress = 200;
 	}
-	krankheitstage = (stress * 2) / 365;
-	verlust += (((krankheitstage * wertDesMitarbeiters * productivity)) * mitarbeiter) / 24 / 60;
+	krankheitstage = (stress * 2) / 365 / 8 / 60;
+	verlust += ((wertDesMitarbeiters * ((100 - productivity)) / 100) * mitarbeiter);
+	verlust += wertDesMitarbeiters * krankheitstage;
 
 	for(var i = 0; i < srmArray.length; i++){
 		if(progress > srmArray[i].timeStart){
@@ -351,6 +393,8 @@ var mouseReleased = function(){
 			srmArray[i].dragging = false;			
 			srmArray[i].changingDuration = false;
 		}
+	}
+	for(var i = 0; i < srmStash.length; i++){		
 		srmStash[i].done = false;
 	}
 	isDragging = false;
