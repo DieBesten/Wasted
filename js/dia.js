@@ -28,11 +28,16 @@ class Dia{
 			}
 			vertex(this.day.x + progress, (this.day.y + this.day.height) - value);
 			vertex(this.day.x + progress, (this.day.y + this.day.height));
-			// console.log(progress);
 			endShape(CLOSE);
 		} else {
 			
 			// TYPE 1 --> Stroke und Transparent
+
+			// Line Background
+			for(var i = 0; i < this.data.length; i++){
+				stroke(255, 255, 255, 50);
+				line(this.day.x + this.distance * i, this.day.y + this.day.height - this.data[i], this.day.x + this.distance * i, this.day.y + this.day.height);
+			}
 
 			// Area
 			fill(20, 20, 20, 50);

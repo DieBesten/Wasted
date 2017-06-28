@@ -38,11 +38,40 @@ class Srm{
 		// 3: Social Media Blocking
 		// 4: Email Begrenzung
 		switch(this.type){
-			case 0:				
+			case 0:		
 				break;
 			case 1:
+				this.i_pro = 0;
+				this.i_stress -= 10;
+				this.i_ablenkung = 0;
+				this.i_krankheitstage -= 15;
+				break;
+			case 2:
+				this.i_pro += 10;
+				this.i_stress -= 15;
+				this.i_ablenkung = 0;
+				this.i_krankheitstage -= 15; // ?
+				break;
+			case 3:
+				this.i_pro -= 5;
+				this.i_stress -= 10;
+				this.i_ablenkung -= 15;
+				this.i_krankheitstage -= 0;
+				break;
+			case 4:
+				this.i_pro = 0;
+				this.i_stress -= 20;
+				this.i_ablenkung -= 30;
+				this.i_krankheitstage -= 0;
 				break;
 		}
+	}
+
+	influence(){
+		productivity *= this.i_pro;
+		stress *= this.i_stress;
+		ablenkung *= this.i_ablenkung;
+		krankheitstage *= this.i_krankheitstage;
 	}
 
 	calculateTime(){

@@ -48,6 +48,8 @@ var isDragging;
 
 var ablenkungen;
 
+var gesamterGewinn;
+
 // fonts
 /*
 var f_Roboto;
@@ -97,7 +99,7 @@ var setup = function(){
 	krankheitstage = 0;
 	gehalt = 21 * 8;
 	wertDesMitarbeiters = gehalt * 4.29 / 8 / 60;
-	ablenkung = 0;
+	ablenkung = 100;
 	oldStress = 0;
 
 	pxProMinute = w / 540;
@@ -129,6 +131,8 @@ var setup = function(){
 	isDragging = false;
 
 	ablenkungen = [];
+
+	gesamterGewinn = 0;
 }
 
 var draw = function(){
@@ -167,7 +171,6 @@ var draw = function(){
 	}
 
 	textSize(12);
-	text(stress, width / 2, 20);
 
 	// Draw the timeline
 	timeLine();
@@ -197,6 +200,14 @@ var timeLine = function(){
 	fill(c_red);
 	rect(x, 107, progress, 8);
 
+	// TIME START
+
+	textAlign(LEFT);
+	text("08:00", x, 96);
+
+	textAlign(RIGHT);
+	text("17:00", x + w, 96);
+
 	// Zeitberrechnung
 
 	if(playing){
@@ -217,12 +228,6 @@ var timeLine = function(){
 		}
 	}
 
-	text(round(verlust), width / 2, 100);
-
-	/*
-	ellipse(width / 2, 50, round(frameRate()), round(frameRate()));
-	*/
-
 	timeLineStrahl(x + progress, 107);
 }
 
@@ -236,12 +241,23 @@ var timeLineStrahl = function(x, y){
 	noStroke();
 
 	// CURRENT TIME
-	textAlign(LEFT);
-	text(currentTimeHours + ":" + currentTimeMinutes, x - 12, y - 5);
-
-	// TIME START
-
+	textAlign(CENTER);
+	textSize(20);
+	if(currentTimeHours < 10){
+		if(currentTimeMinutes < 10){
+			text("0" + currentTimeHours + ":0" + currentTimeMinutes, x - 4, y - 16);
+		} else {
+			text("0" + currentTimeHours + ":" + currentTimeMinutes, x - 4, y - 16);
+		}
+	} else {
+		if(currentTimeMinutes < 10){
+			text(currentTimeHours + ":0" + currentTimeMinutes, x - 4, y - 16);
+		} else {
+			text(currentTimeHours + ":" + currentTimeMinutes, x - 4, y - 16);
+		}
+	}
 	
+	textSize(12);
 
 	// indicators
 
@@ -286,6 +302,7 @@ var timeLineReset = function(){
 			productivityArray.push(new Dia(days[currentDay-1], 1, 255, c_red, w / 540 * 60));
 			// Start values for the new day
 			stress = 0;
+			gesamterGewinn += wertDesMitarbeiters * (currentTimeHours - 8) * 60 + currentTimeMinutes;
 			stressArray[currentDay-1].addData(stress);
 			productivityArray[currentDay-1].addData(productivity);
 		}
@@ -337,25 +354,32 @@ var rightSidebar = function(){
 
 	// Line --> Wie viel könnte erarbeitet werden
 	fill(255);
-	var potentiellerGewinn = wertDesMitarbeiters * (currentTimeHours - 8) * 60 + currentTimeMinutes;
+	var potentiellerGewinn = wertDesMitarbeiters * (currentTimeHours - 8) * 60 + currentTimeMinutes + gesamterGewinn;
 	textAlign(CENTER);
-	text(potentiellerGewinn, width / 100 * 94, 120);
+	text("Potentieller Gewinn:\n" + round(potentiellerGewinn) + "€", width / 100 * 94, 120);
 
 	// Water
 	fill(c_red.levels[0], c_red.levels[1], c_red.levels[2], 200);
-	var y = height - ((verlust / potentiellerGewinn * 100)) / 100 * 28;
-	rect(width / 100 * 88, y, width / 100 * 12, 100);
+	var y = height - ((((verlust / potentiellerGewinn * 100)) / 100) * height);
+	rect(width / 100 * 88, y, width / 100 * 12, height);
+
+	fill(255);
+	text("Verlust durch\ndigitalen Stress:\n", width / 100 * 94, height - 120);
+	textSize(20);
+	text(round(verlust) + "€", width / 100 * 94, height - 60);
 }
 
 var calculation = function(){
 
 	// Zufällige Ablenkung --> Ca alle 20 Minuten?
-	var newDistraction = round(random(0,20));
-	if(newDistraction >= 19){
+	var newDistraction = round(random(0,ablenkung / 5));
+	if(newDistraction >= (ablenkung / 5) - 1){
 		if(currentDay >= 1){
 			ablenkungen.push(new Ablenkung(days[currentDay-1].x + progress, days[currentDay - 1].y + days[currentDay-1].height - (productivity / 120 * 100)));
+			ablenkung += 1;
 		}
-		productivity = 0;
+		// Die Produktivität fällt durch die Ablenkung
+		productivity = 20;
 	}
 
 	// Produktiviät = -28% bei 100% Ablenkung	
@@ -366,7 +390,7 @@ var calculation = function(){
 	}
 	// Stress erhöht sich je länger der Tag geht, 200 ist das maximale Stresslevel
 	if(stress < 200){
-		stress = (100 - (ablenkung / 100 * 60)) + ((currentTimeHours * 60 + currentTimeMinutes) / 20) + random(0,1) + (oldStress / 10);
+		stress = 100 + ((currentTimeHours * 60 + currentTimeMinutes) / 20) + random(0,1) + (oldStress / 10);
 		if(stress > 200){
 			stress = 200;
 		}
@@ -374,14 +398,24 @@ var calculation = function(){
 		stress = 200;
 	}
 	krankheitstage = (stress * 2) / 365 / 8 / 60;
-	verlust += ((wertDesMitarbeiters * ((100 - productivity)) / 100) * mitarbeiter);
-	verlust += wertDesMitarbeiters * krankheitstage;
 
+	// Einfluss der SRM
 	for(var i = 0; i < srmArray.length; i++){
-		if(progress > srmArray[i].timeStart){
-			// Einfluss von SRM auf die Rechnung
+		if(progress > srmArray[i].startTime * pxProMinute && progress < srmArray[i].endTime * pxProMinute && srmArray[i].day == days[currentDay-1]){
+			srmArray[i].influence();
 		}
 	}
+
+	// Kein negativer Stress
+	if(stress < 100){
+		stress = 100;
+	} else if(stress > 200){
+		stress = 200;
+	}
+
+	// Verlustrechnung
+	verlust += ((wertDesMitarbeiters * ((100 - productivity)) / 100) * mitarbeiter);
+	verlust += wertDesMitarbeiters * krankheitstage;
 }
 
 var mouseReleased = function(){

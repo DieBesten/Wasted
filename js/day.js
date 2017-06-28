@@ -26,7 +26,6 @@ class Day{
 		// Day Area Background
 		fill(this.background);
 		rect(this.x + 16, this.y, this.width - 16, this.height);
-
 	}
 
 	setActive(b){

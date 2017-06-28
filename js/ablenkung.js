@@ -7,9 +7,12 @@ class Ablenkung{
 
 	draw(){
 		fill(255);
+		/*
 		textSize(10);
 		textAlign(CENTER);
 		text(this.type, this.position.x, this.position.y);
+		*/
+		ellipse(this.position.x, this.position.y, 5, 5);
 	}
 
 	newType(){
