@@ -116,11 +116,13 @@ class Srm{
 		// duration interaction indicator
 		if(this.onDay && editMode){
 			// Sides background
+			/*
 			fill(c_verylightblue);
 			rect(this.position.x, this.position.y, 16, 120);			
 			rect(this.position.x + this.duration - 16, this.position.y, 16, 120);
+			*/
 			// Handles
-			fill(255);
+			fill(c_verylightblue);
 			// Left			
 			rect(this.position.x + 4, this.position.y + 44, 1, 24);
 			rect(this.position.x + 8, this.position.y + 44, 1, 24);
@@ -129,7 +131,7 @@ class Srm{
 			rect(this.position.x + this.duration - 10, this.position.y + 44, 1, 24);
 
 			// Arrows			
-			fill(c_red);
+			fill(c_yellow);
 			triangle(this.position.x, this.position.y + 115, this.position.x + 8, this.position.y + 108, this.position.x + 16, this.position.y + 115);
 			triangle(this.position.x + this.duration - 16, this.position.y + 115, this.position.x + this.duration - 8, this.position.y + 108, this.position.x + this.duration, this.position.y + 115);
 
