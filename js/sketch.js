@@ -4,6 +4,7 @@ var c_red;
 var c_blue;
 var c_lightblue;
 var c_verylightblue;
+var c_turq;
 
 var timeStart;
 var timeEnd;
@@ -50,6 +51,8 @@ var ablenkungen;
 
 var gesamterGewinn;
 
+var onSRM;
+
 // fonts
 /*
 var f_Roboto;
@@ -65,15 +68,18 @@ var setup = function(){
 
 	// Set our main colors
 	c_red = color(222, 82, 66);
+	// 29, 29, 36
 	c_blue = color(29, 29, 36);
 	c_lightblue = color(33, 34, 41);
 	c_verylightblue = color(56, 56, 71);
+	// 87, 87, 109
+	c_yellow = color(0, 105, 146);
 
 	// Create the Days
 	var x = (width / 100 * 12) + ((width / 100 * 76) / 100 * 5);
 	var w = width - (x * 2);
 	days = [];
-	dayLabels = ["MONTAG", "DIENSTAG", "MITTWOCH", "DONNERSTAG", "FREITAG"];
+	dayLabels = ["MO", "DI", "MI", "DO", "FR"];
 	for(var i = 1; i < 6; i++){
 		days.push(new Day(x, 124 * i, w, 120, dayLabels[i-1], c_lightblue, c_verylightblue));
 	}
@@ -89,7 +95,7 @@ var setup = function(){
 	currentTimeMinutes = 0;
 	currentDay = 0;
 
-	days[currentDay].backgroundLabel = c_red;
+	days[currentDay].backgroundLabel = c_yellow;
 
 	// Set start values for the calculation
 	stress = 0;
@@ -124,15 +130,18 @@ var setup = function(){
 	*/
 
 	srmStash = [];
-	srmStash.push(new Srm(0, width / 100 * 6 - 56, height / 2, "Yoga", days));
-	srmStash.push(new Srm(0, width / 100 * 6 - 56, height / 2 + 128, "Sport", days));
-	srmStash.push(new Srm(0, width / 100 * 6 - 56, height / 2 + 128 * 2, "SMB", days));
+	srmStash.push(new Srm(0, width / 100 * 6 - 28, height / 2 - 128, "Yoga", days));
+	srmStash.push(new Srm(0, width / 100 * 6 - 28, height / 2, "Yoga", days));
+	srmStash.push(new Srm(0, width / 100 * 6 - 28, height / 2 + 128, "Sport", days));
+	srmStash.push(new Srm(0, width / 100 * 6 - 28, height / 2 + 128 * 2, "SMB", days));
 
 	isDragging = false;
 
 	ablenkungen = [];
 
 	gesamterGewinn = 0;
+
+	onSRM = false;
 }
 
 var draw = function(){
@@ -180,6 +189,9 @@ var draw = function(){
 
 	// Draw the left sidebar
 	leftSidebar();
+
+	// Draw the top left sidebar
+	// leftTop();
 }
 
 var timeLine = function(){
@@ -197,11 +209,12 @@ var timeLine = function(){
 	fill(c_lightblue);
 	rect(x, 107, w, 8);
 
-	fill(c_red);
+	fill(c_yellow);
 	rect(x, 107, progress, 8);
 
 	// TIME START
 
+	fill(255);
 	textAlign(LEFT);
 	text("08:00", x, 96);
 
@@ -245,15 +258,15 @@ var timeLineStrahl = function(x, y){
 	textSize(20);
 	if(currentTimeHours < 10){
 		if(currentTimeMinutes < 10){
-			text("0" + currentTimeHours + ":0" + currentTimeMinutes, x - 4, y - 16);
+			text("0" + currentTimeHours + ":0" + currentTimeMinutes, x - 4, y - 24);
 		} else {
-			text("0" + currentTimeHours + ":" + currentTimeMinutes, x - 4, y - 16);
+			text("0" + currentTimeHours + ":" + currentTimeMinutes, x - 4, y - 24);
 		}
 	} else {
 		if(currentTimeMinutes < 10){
-			text(currentTimeHours + ":0" + currentTimeMinutes, x - 4, y - 16);
+			text(currentTimeHours + ":0" + currentTimeMinutes, x - 4, y - 24);
 		} else {
-			text(currentTimeHours + ":" + currentTimeMinutes, x - 4, y - 16);
+			text(currentTimeHours + ":" + currentTimeMinutes, x - 4, y - 24);
 		}
 	}
 	
@@ -271,10 +284,19 @@ var timeLineStrahl = function(x, y){
 
 	// indicatior text
 
+	if(onSRM){
+		fill(c_blue);
+	} else {
+		fill(255);
+	}
+
 	textAlign(LEFT);
-	fill(255);
-	text("Produktiviät: " + productivity + "%", x, ((y + 126) - (productivity) / 112 * 100) + 10 + ((currentDay - 1) * 124));
-	text("Stress: " + round(stress - 100) + "%", x, ((y + 126) - ((stress - 100) / 112 * 100)) + 10 + ((currentDay - 1) * 124));
+	textSize(16);
+	text(productivity + "%", x + 16, ((y + 126) - (productivity) / 112 * 100) + 10 + ((currentDay - 1) * 124));
+	text(round(stress - 100) + "%", x + 16, ((y + 126) - ((stress - 100) / 112 * 100)) + 10 + ((currentDay - 1) * 124));
+	textSize(10);
+	text("\nProduktiviät", x + 16, ((y + 126) - (productivity) / 112 * 100) + 10 + ((currentDay - 1) * 124));
+	text("\nStress", x + 16, ((y + 126) - ((stress - 100) / 112 * 100)) + 10 + ((currentDay - 1) * 124));
 }
 
 var timeLineReset = function(){
@@ -286,7 +308,7 @@ var timeLineReset = function(){
 	// next Day
 
 	if(currentDay < days.length){		
-		days[currentDay].backgroundLabel = c_red;
+		days[currentDay].backgroundLabel = c_yellow;
 		if(currentDay >= 1){
 			days[currentDay-1].backgroundLabel = c_verylightblue;
 		}		
@@ -310,6 +332,17 @@ var timeLineReset = function(){
 		currentDay = 0;
 		days[days.length-1].backgroundLabel = c_verylightblue;
 	}
+}
+
+var leftTop = function(){
+	// background
+	fill(c_lightblue);
+	rect(0,0, width / 100 * 12, 224);
+
+	// logo
+
+	// controls
+
 }
 
 var leftSidebar = function(){
@@ -355,22 +388,28 @@ var rightSidebar = function(){
 	// Line --> Wie viel könnte erarbeitet werden
 	fill(255);
 	var potentiellerGewinn = wertDesMitarbeiters * (currentTimeHours - 8) * 60 + currentTimeMinutes + gesamterGewinn;
+	if(isNaN(potentiellerGewinn)){
+		potentiellerGewinn = 0;
+	}
 	textAlign(CENTER);
-	text("Potentieller Gewinn:\n" + round(potentiellerGewinn) + "€", width / 100 * 94, 120);
+	textSize(20);
+	text(round(potentiellerGewinn) + "€", width / 100 * 94, 100);
+	textSize(10);
+	text("Potenzielle Tagesleistung", width / 100 * 94, 120);
 
 	// Water
 	fill(c_red.levels[0], c_red.levels[1], c_red.levels[2], 200);
 	var y = height - ((((verlust / potentiellerGewinn * 100)) / 100) * height);
 	rect(width / 100 * 88, y, width / 100 * 12, height);
 
-	fill(255);
-	text("Verlust durch\ndigitalen Stress:\n", width / 100 * 94, height - 120);
+	fill(255);	
 	textSize(20);
-	text(round(verlust) + "€", width / 100 * 94, height - 60);
+	text(round(verlust) + "€", width / 100 * 94, height - 120);
+	textSize(10);
+	text("Verlust durch\ndigitalen Stress", width / 100 * 94, height - 100);
 }
 
-var calculation = function(){
-
+var calcAblenkung = function(){
 	// Zufällige Ablenkung --> Ca alle 20 Minuten?
 	var newDistraction = round(random(0,ablenkung / 5));
 	if(newDistraction >= (ablenkung / 5) - 1){
@@ -381,13 +420,10 @@ var calculation = function(){
 		// Die Produktivität fällt durch die Ablenkung
 		productivity = 20;
 	}
+	return ablenkung;
+}
 
-	// Produktiviät = -28% bei 100% Ablenkung	
-	//productivity = 100 - (ablenkung / 100 * 28);
-	if(productivity < 100){
-		// 20 Minuten um wieder voll produktiv zu sein
-		productivity += 5;
-	}
+var calcStress = function(){
 	// Stress erhöht sich je länger der Tag geht, 200 ist das maximale Stresslevel
 	if(stress < 200){
 		stress = 100 + ((currentTimeHours * 60 + currentTimeMinutes) / 20) + random(0,1) + (oldStress / 10);
@@ -397,12 +433,44 @@ var calculation = function(){
 	} else {
 		stress = 200;
 	}
+	return stress;
+}
+
+var calcProductivity = function(){
+	// Produktiviät = -28% bei 100% Ablenkung	
+	//productivity = 100 - (ablenkung / 100 * 28);
+	if(productivity < 100){
+		// 20 Minuten um wieder voll produktiv zu sein
+		productivity += 5;
+	}
+	return calcProductivity;
+}
+
+var calcKrankheitstage = function(){
 	krankheitstage = (stress * 2) / 365 / 8 / 60;
+	return krankheitstage;
+}
+
+var calcVerlust = function(){
+	// Verlustrechnung
+	verlust += ((wertDesMitarbeiters * ((100 - productivity)) / 100) * mitarbeiter);
+	verlust += wertDesMitarbeiters * krankheitstage;
+	return verlust;
+}
+
+var calculation = function(){
+
+	calcAblenkung();
+	calcProductivity();
+	calcKrankheitstage();
+	calcStress();
 
 	// Einfluss der SRM
+	onSRM = false;
 	for(var i = 0; i < srmArray.length; i++){
 		if(progress > srmArray[i].startTime * pxProMinute && progress < srmArray[i].endTime * pxProMinute && srmArray[i].day == days[currentDay-1]){
 			srmArray[i].influence();
+			onSRM = true;
 		}
 	}
 
@@ -413,9 +481,8 @@ var calculation = function(){
 		stress = 200;
 	}
 
-	// Verlustrechnung
-	verlust += ((wertDesMitarbeiters * ((100 - productivity)) / 100) * mitarbeiter);
-	verlust += wertDesMitarbeiters * krankheitstage;
+	calcVerlust();
+
 }
 
 var mouseReleased = function(){

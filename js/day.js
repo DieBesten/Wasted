@@ -13,11 +13,11 @@ class Day{
 	draw(){
 		// Label for Day
 		fill(this.backgroundLabel);
-		rect(this.x, this.y, 16, this.height);
+		rect(this.x - 16, this.y, 16, this.height);
 		fill(255);
 		textAlign(LEFT);
 		push();
-		translate(this.x + 12, this.y + 112);
+		translate(this.x + 12 - 16, this.y + 112);
 		rotate(radians(-90));
 		textSize(12);
 		text(this.label, 0, 0);
@@ -25,7 +25,7 @@ class Day{
 
 		// Day Area Background
 		fill(this.background);
-		rect(this.x + 16, this.y, this.width - 16, this.height);
+		rect(this.x, this.y, this.width, this.height);
 	}
 
 	setActive(b){
