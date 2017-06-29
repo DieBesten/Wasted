@@ -28,8 +28,8 @@ body {
 .logo {
 	background: url("../Bilder/wastedLogoRot.png");
   float: left;
-  height: 50px;
-  width: 140px;
+  height: 60px;
+  width: 150px;
 	background-size: 100%;
 	background-repeat: no-repeat;
 }
@@ -42,18 +42,41 @@ body {
 
 .header {
   background: #5B5B67;
-  height: 180px;
+  height: 700px;
   width: 100%;
+}
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.headerContent{
+	padding-left: 100px;
+	padding-top: 500px;
 
+	color: #ECECEC;
+	font-size: 1.4em;
+	text-align: left;
+}
+
+.mainPicture {
+
+}
+
+.button {
+	text-decoration: none;
+  width: 240px;
+	margin-top: 20px;
+	margin-right: 220px;
+  color: white;
+  padding: 15px;
+  background: #DE5242;
   color: #ECECEC;
-  font-size: 1.6em;
+	float: right;
   text-align: center;
-  vertical-align: middle
+  transition: all 0.2s;
+  border-radius: 10px;
+}
 
+.button:hover {
+  border-radius: 20px;
+  transition: all 0.2s;
 }
 
 .roterStrich {
@@ -63,14 +86,15 @@ body {
 }
 
 .boxAroundContent {
-	padding: 100px;
+	padding: 50px;
 
 }
 
 .inhalt1 {
+	margin-left: 50px;
 	float: left;
-  height: 350px;
-  width: 45%;
+  height: 250px;
+  width: 42%;
 
   color: #555561;
   font-size: 1.2em;
@@ -83,9 +107,10 @@ body {
 }
 
 .inhalt2 {
+	margin-right: 50px;
 	float: right;
-  height: 350px;
-  width: 45%;
+  height: 250px;
+  width: 42%;
 
   color: #555561;
   font-size: 1.2em;
@@ -93,27 +118,7 @@ body {
   text-align: left;
 }
 
-.button {
-	text-decoration: none;
-  width: 220px;
-	margin: auto;
-  color: white;
-  padding: 15px;
-  background: #DE5242;
-  color: #ECECEC;
-  font-size: 1.2em;
-  display: block;
-  text-align: center;
-  transition: all 0.2s;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-}
 
-.button:hover {
-  border-radius: 20px;
-  transition: all 0.2s;
-}
 
 .dasProjekt {
 	display: flex;
