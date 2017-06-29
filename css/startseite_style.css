@@ -7,11 +7,15 @@
 
 */
 
+* {
+	box-sizing: border-box;
+}
+
 html, body {
 	padding: 0;
 	margin: 0;
 	font-family: 'Roboto', sans-serif;
-	overflow-y:scroll; /*Page scrollbar machen */
+	overflow-y: scroll; /*Page scrollbar machen */
 }
 
 body {
@@ -58,24 +62,42 @@ body {
   width: 100%;
 }
 
-.inhalt {
-  height: 450px;
-  width: 100%;
+.boxAroundContent {
+	padding: 100px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+}
+
+.inhalt1 {
+	margin-top: 20px;
+	float: left;
+  height: 350px;
+  width: 45%;
 
   color: #555561;
-  font-size: 1.5em;
-  font-family: 'roboto';
+  font-size: 1.2em;
+  font-family: 'roboto light';
   text-align: left;
-  vertical-align: middle
+}
+
+.clear {
+	clear: both;
+}
+
+.inhalt2 {
+	margin-top: 20px;
+	float: right;
+  height: 350px;
+  width: 45%;
+
+  color: #555561;
+  font-size: 1.2em;
+  font-family: 'roboto light';
+  text-align: left;
 }
 
 .button {
 	text-decoration: none;
-  width: 175px;
+  width: 220px;
 	margin: auto;
   color: white;
   padding: 15px;
@@ -112,12 +134,12 @@ body {
   justify-content: center;
 
   color: #555561;
-  font-size: 1.5em;
-  font-family: 'roboto';
+  font-size: 1.2em;
+  font-family: 'roboto light';
 }
 
 .inhaltDasProjekt {
-  width: 100%;
+  width: 50%;
 	padding-top: 30px;
 	padding-bottom: 30px;
   display: flex;
@@ -126,8 +148,8 @@ body {
   justify-content: center;
 
   color: #555561;
-  font-size: 1.5em;
-  font-family: 'roboto';
+  font-size: 1.2em;
+  font-family: 'roboto light';
   text-align: left;
   vertical-align: middle
 }
