@@ -11,6 +11,22 @@
 	box-sizing: border-box;
 }
 
+video {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: 100%;
+    height: auto;
+    z-index: -100;
+    transform: translateX(-50%) translateY(-50%);
+		background-size: cover;
+		transition: 1s opacity;
+		/*Inspiriert von https://codepen.io/dudleystorey/pen/knqyK*/
+}
+
+
 html, body {
 	padding: 0;
 	margin: 0;
@@ -26,6 +42,9 @@ body {
 }
 
 .logo {
+	margin-top: -50px;
+	margin-bottom: 10px;
+	margin-left: 100px;
 	background: url("../Bilder/wastedLogoRot.png");
   float: left;
   height: 60px;
@@ -35,13 +54,13 @@ body {
 }
 
 .upperHeader {
+	opacity: 0.1;
   background: #555561;
-  height: 50px;
+  height: 65px;
   width: 100%;
 }
 
 .header {
-  background: #5B5B67;
   height: 700px;
   width: 100%;
 }
@@ -51,6 +70,7 @@ body {
 	padding-top: 500px;
 
 	color: #ECECEC;
+  text-shadow: 0px 0px 3px black;
 	font-size: 1.4em;
 	text-align: left;
 }
@@ -63,7 +83,7 @@ body {
 	text-decoration: none;
   width: 240px;
 	margin-top: 20px;
-	margin-right: 220px;
+	margin-right: 160px;
   color: white;
   padding: 15px;
   background: #DE5242;
@@ -86,12 +106,15 @@ body {
 }
 
 .boxAroundContent {
+	background: #ECECEC;
 	padding: 50px;
 
 }
 
 .inhalt1 {
+
 	margin-left: 50px;
+	margin-bottom: 120px;
 	float: left;
   height: 250px;
   width: 42%;
@@ -108,6 +131,7 @@ body {
 
 .inhalt2 {
 	margin-right: 50px;
+	margin-bottom: 120px;
 	float: right;
   height: 250px;
   width: 42%;
@@ -121,6 +145,7 @@ body {
 
 
 .dasProjekt {
+	background: #ECECEC;
 	display: flex;
 	flex-direction: column;
   align-items: center;
@@ -142,8 +167,8 @@ body {
 }
 
 .inhaltDasProjekt {
+	background: #ECECEC;
   width: 50%;
-	padding-top: 30px;
 	padding-bottom: 30px;
   display: flex;
 	flex-direction: column;
