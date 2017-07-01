@@ -54,17 +54,19 @@ var gesamterGewinn;
 var onSRM;
 
 // fonts
-/*
+
 var f_Roboto;
 
 var preload = function() {
    f_Roboto = loadFont('../assets/Roboto-Regular.ttf');
 }
-*/
+
 
 var setup = function(){
 	createCanvas(windowWidth, windowHeight);
 	background(255, 255, 255, 0);
+
+	textFont(f_Roboto);
 
 	// Set our main colors
 	c_red = color(222, 82, 66);
@@ -86,6 +88,7 @@ var setup = function(){
 
 	// Simulation playing
 	playing = false;
+	playMode = false;
 	editMode = true;
 
 	// Declare variables for the timeline
@@ -191,7 +194,7 @@ var draw = function(){
 	leftSidebar();
 
 	// Draw the top left sidebar
-	// leftTop();
+	leftTop();
 }
 
 var timeLine = function(){
@@ -342,7 +345,71 @@ var leftTop = function(){
 	// logo
 
 	// controls
+	// left
+	if(editMode){		
+		fill(c_yellow);
+	} else {
+		fill(c_verylightblue)
+	}
+	rect(0, 124, width / 100 * 6, 80);
+	// right
+	if(playMode){		
+		fill(c_yellow);
+	} else {
+		fill(c_verylightblue)
+	}
+	rect(width / 100 * 6, 124, width / 100 * 6, 80);
 
+	// time control
+	// show only in play mode
+	if(playMode){
+		fill(c_verylightblue);
+		rect(0, 212, width / 100 * 12, 40);
+
+		// buttons
+		// left
+		if(mouseX > 0 && mouseX < width / 100 * 4 && mouseY > 212 && mouseY < 262){
+			// hover effect
+			fill(c_yellow);
+			// on click
+			if(mouseIsPressed){
+
+			}
+		} else {
+			fill(c_verylightblue)
+		}
+		// left content
+		rect(0, 212, width / 100 * 4, 40);
+
+		// middle
+		if(mouseX > width / 100 * 4 && mouseX < width / 100 * 8 && mouseY > 212 && mouseY < 262){
+			// hover effect
+			fill(c_yellow);
+			// on click
+			if(mouseIsPressed){
+				playing = false;
+			}
+		} else {
+			fill(c_verylightblue)
+		}
+		// middle content
+		rect(width / 100 * 4, 212, width / 100 * 4, 40);
+
+		// right
+		if(mouseX > width / 100 * 8 && mouseX < width / 100 * 12 && mouseY > 212 && mouseY < 262){
+			// hover effect
+			fill(c_yellow);
+			console.log("RIGHT");
+			// on click
+			if(mouseIsPressed){
+				playing = true;
+			}
+		} else {
+			fill(c_verylightblue)
+		}
+		// right content
+		rect(width / 100 * 8, 212, width / 100 * 4, 40);
+	}
 }
 
 var leftSidebar = function(){
@@ -353,11 +420,13 @@ var leftSidebar = function(){
 	// play Button
 	if(dist(mouseX, mouseY, width / 100 * 9, 164) < 40 && mouseIsPressed){
 		playing = true;
+		playMode = true;
 		editMode = false;
 	}
 	// edit Button
 	if(dist(mouseX, mouseY, width / 100 * 3, 164) < 40 && mouseIsPressed){
 		playing = false;
+		playMode = false;
 		editMode = true;
 	}
 
@@ -387,7 +456,7 @@ var rightSidebar = function(){
 
 	// Line --> Wie viel könnte erarbeitet werden
 	fill(255);
-	var potentiellerGewinn = wertDesMitarbeiters * (currentTimeHours - 8) * 60 + currentTimeMinutes + gesamterGewinn;
+	var potentiellerGewinn = (wertDesMitarbeiters * (currentTimeHours - 8) * 60 + currentTimeMinutes + gesamterGewinn) * mitarbeiter;
 	if(isNaN(potentiellerGewinn)){
 		potentiellerGewinn = 0;
 	}
