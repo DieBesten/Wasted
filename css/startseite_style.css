@@ -42,10 +42,10 @@ body {
 }
 
 .logo {
-	margin-top: -50px;
+	margin-top: -60px;
 	margin-bottom: 10px;
 	margin-left: 100px;
-	background: url("../Bilder/wastedLogoRot.png");
+	background: url("../Bilder/WastedBusinessUnpluggedLogo.png");
   float: left;
   height: 60px;
   width: 150px;
@@ -61,7 +61,7 @@ body {
 }
 
 .header {
-  height: 700px;
+  height: 685px;
   width: 100%;
 }
 
@@ -153,7 +153,7 @@ body {
   justify-content: center;
 }
 
-.überschriftDasProjekt {
+.überschriftSRM {
 	text-decoration: underline;
 	text-decoration-color: #DE5242;
 	text-align: center;
