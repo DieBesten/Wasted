@@ -149,8 +149,6 @@ body {
 }
 
 .überschriftSRM {
-	text-decoration: underline;
-	text-decoration-color: #DE5242;
 	text-align: center;
   width: 100%;
   display: flex;
