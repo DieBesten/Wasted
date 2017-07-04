@@ -45,7 +45,7 @@ body {
 	margin-top: -50px;
 	margin-bottom: 10px;
 	margin-left: 100px;
-	background: url("../Bilder/WastedBusinessUnpluggedLogo.png");
+	background: url("../Bilder/WastedLogo.png");
   float: left;
   height: 60px;
   width: 150px;
@@ -70,8 +70,8 @@ body {
 	padding-top: 500px;
 
 	color: #ECECEC;
-  text-shadow: 0px 0px 3px black; /*Schatten um den Text auf hellem Hintergrund sichtbar zu machen*/
-	font-size: 1.4em;
+  text-shadow: 0px 0px 2px black; /*Schatten um den Text auf hellem Hintergrund sichtbar zu machen*/
+	font-size: 1.6em;
 	text-align: left;
 }
 
