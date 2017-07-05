@@ -9,6 +9,8 @@ class Srm{
 		this.i_stress = 0;
 		this.i_ablenkung = 0;
 		this.i_krankheitstage = 0;
+		this.i_ablenkungFrequency = 0;
+
 		this.label = label;
 
 		this.position = createVector(x,y);
@@ -41,25 +43,30 @@ class Srm{
 			case 0:		
 				break;
 			case 1:
+				// YOGA
 				this.i_pro = 0;
 				this.i_stress -= 10;
 				this.i_ablenkung = 0;
 				this.i_krankheitstage -= 15;
 				break;
 			case 2:
+				// SPORT
 				this.i_pro += 10;
 				this.i_stress -= 15;
 				this.i_ablenkung = 0;
 				this.i_krankheitstage -= 15; // ?
 				break;
 			case 3:
+				// SOCIAL MEDIA BLOCKING
 				this.i_pro -= 5;
 				this.i_stress -= 10;
 				this.i_ablenkung -= 15;
 				this.i_krankheitstage -= 0;
+				this.i_ablenkungFrequency -= 100;
 				break;
 			case 4:
-				this.i_pro = 0;
+				// EMAIL BEGRENZUNG
+				this.i_pro -= 10;
 				this.i_stress -= 20;
 				this.i_ablenkung -= 30;
 				this.i_krankheitstage -= 0;
@@ -68,10 +75,49 @@ class Srm{
 	}
 
 	influence(){
-		productivity *= this.i_pro;
-		stress *= this.i_stress;
-		ablenkung *= this.i_ablenkung;
-		krankheitstage *= this.i_krankheitstage;
+		switch(this.type){
+			case 0:		
+				break;
+			case 1:
+				// YOGA
+				this.i_pro = 0;
+				this.i_stress -= 10;
+				this.i_ablenkung = 0;
+				this.i_krankheitstage -= 15;
+				productivity = this.i_pro;
+				ablenkungFrequency = this.i_ablenkung;
+				break;
+			case 2:
+				// SPORT
+				this.i_pro += 10;
+				this.i_stress -= 15;
+				this.i_ablenkung = 0;
+				this.i_krankheitstage -= 15; // ?
+				break;
+			case 3:
+				// SOCIAL MEDIA BLOCKING
+				this.i_pro = 95;
+				this.i_stress -= 10;
+				this.i_ablenkung -= 15;
+				this.i_krankheitstage -= 0;
+				this.i_ablenkungFrequency -= 100;
+				break;
+			case 4:
+				// EMAIL BEGRENZUNG
+				this.i_pro -= 10;
+				this.i_stress -= 20;
+				this.i_ablenkung -= 30;
+				this.i_krankheitstage -= 0;
+				break;
+		}
+
+		/*
+		productivity += this.i_pro;
+		stress += this.i_stress;
+		ablenkung += this.i_ablenkung;
+		krankheitstage += this.i_krankheitstage;
+		ablenkungFrequency += this.i_ablenkungFrequency;
+		*/
 	}
 
 	calculateTime(){
@@ -139,6 +185,7 @@ class Srm{
 			rect(this.position.x, this.position.y + 115, this.duration, 5);
 
 			// Time
+			textFont("Arial");
 			textSize(10);
 			fill(c_blue);
 			textAlign(LEFT);
@@ -179,6 +226,7 @@ class Srm{
 				}
 			}
 			text(t, this.position.x + this.duration -  18, this.position.y + 110);
+			textFont(f_Roboto);
 		}
 
 		// Disable functionality if type 0 --> sidebar

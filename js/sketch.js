@@ -1,3 +1,18 @@
+/*
+Wasted - Business Unplugged
+Prototype Version 0.1
+
+IMD Semesterprojekt Sommersemester 2017
+
+Elina Faber, Sabina Mujcinovic, Philipp Kaltofen
+
+
+Known Bugs:
+Auswirkungen von SRM nicht ganz fertig implementiert
+Reset von Simulation fehlt noch
+
+*/
+
 p5.disableFriendlyErrors = true;
 
 var c_red;
@@ -21,6 +36,7 @@ var krankheitstage;
 var wertDesMitarbeiters;
 var gehalt;
 var ablenkung;
+var ablenkungFrequency;
 
 // vom Tag vorher
 var oldStress;
@@ -56,11 +72,12 @@ var onSRM;
 // fonts
 
 var f_Roboto;
+var f_FontAwesome;
 
 var preload = function() {
    f_Roboto = loadFont('../assets/Roboto-Regular.ttf');
+   f_FontAwesome = loadFont('../assets/FontAwesome.otf');
 }
-
 
 var setup = function(){
 	createCanvas(windowWidth, windowHeight);
@@ -75,7 +92,7 @@ var setup = function(){
 	c_lightblue = color(33, 34, 41);
 	c_verylightblue = color(56, 56, 71);
 	// 87, 87, 109
-	c_yellow = color(0, 105, 146);
+	c_yellow = color(0, 105, 146); // Blau
 
 	// Create the Days
 	var x = (width / 100 * 12) + ((width / 100 * 76) / 100 * 5);
@@ -87,13 +104,13 @@ var setup = function(){
 	}
 
 	// Simulation playing
-	playing = false;
-	playMode = false;
-	editMode = true;
+	playing = false; // Simulation wird abgespielt
+	playMode = false; // Im Simulationsmodus
+	editMode = true; // Im Bearbeitenmodus
 
 	// Declare variables for the timeline
-	timeStart = 8;
-	timeEnd = 17;
+	timeStart = 8; // Stunden
+	timeEnd = 17; // Stunden
 	currentTime = timeStart;
 	currentTimeMinutes = 0;
 	currentDay = 0;
@@ -101,17 +118,18 @@ var setup = function(){
 	days[currentDay].backgroundLabel = c_yellow;
 
 	// Set start values for the calculation
-	stress = 0;
-	productivity = 100;
-	verlust = 0;
+	stress = 0; // Prozent
+	productivity = 100; // Prozent
+	verlust = 0; // Euro
 	mitarbeiter = 1;
-	krankheitstage = 0;
-	gehalt = 21 * 8;
-	wertDesMitarbeiters = gehalt * 4.29 / 8 / 60;
-	ablenkung = 100;
-	oldStress = 0;
+	krankheitstage = 0; // Tage
+	gehalt = 21 * 8; // Euro
+	wertDesMitarbeiters = gehalt * 4.29 / 8 / 60; // Euro
+	ablenkung = 100; // Prozent
+	ablenkungFrequency = 20; // Durchschnitt in Minuten
+	oldStress = 0; // Prozent an Stress der vom vorherigen Tag mitgenommen wird
 
-	pxProMinute = w / 540;
+	pxProMinute = w / 540; // Pixel
 	progress = ((currentTimeHours - 8) * pxProMinute * 60) + (currentTimeMinutes * pxProMinute);
 
 	// Diagrams Array and creation for first day
@@ -126,23 +144,18 @@ var setup = function(){
 
 	// SRM Array
 	srmArray = [];
-	/*
-	srmArray.push(new Srm(1, width / 100 * 6 - 56, height / 2, "Yoga", days));
-	srmArray.push(new Srm(2, width / 100 * 6 - 56, height / 2 + 128, "Sport", days));
-	srmArray.push(new Srm(3, width / 100 * 6 - 56, height / 2 + 128 * 2, "SMB", days));
-	*/
 
 	srmStash = [];
 	srmStash.push(new Srm(0, width / 100 * 6 - 28, height / 2 - 128, "Yoga", days));
-	srmStash.push(new Srm(0, width / 100 * 6 - 28, height / 2, "Yoga", days));
-	srmStash.push(new Srm(0, width / 100 * 6 - 28, height / 2 + 128, "Sport", days));
-	srmStash.push(new Srm(0, width / 100 * 6 - 28, height / 2 + 128 * 2, "SMB", days));
+	srmStash.push(new Srm(0, width / 100 * 6 - 28, height / 2, "Autogenes\nTraining", days));
+	srmStash.push(new Srm(0, width / 100 * 6 - 28, height / 2 + 128, "Social Media\nBlocking", days));
+	srmStash.push(new Srm(0, width / 100 * 6 - 28, height / 2 + 128 * 2, "Mail Sperre", days));
 
 	isDragging = false;
 
 	ablenkungen = [];
 
-	gesamterGewinn = 0;
+	gesamterGewinn = 0; // Euro
 
 	onSRM = false;
 }
@@ -164,7 +177,7 @@ var draw = function(){
 		days[i].draw();
 	}
 
-	if(playing){
+	if(playMode){
 		for(var i = 0; i < srmArray.length; i++){
 			srmArray[i].draw();
 		}
@@ -217,12 +230,15 @@ var timeLine = function(){
 
 	// TIME START
 
+	textFont("Arial");
 	fill(255);
 	textAlign(LEFT);
 	text("08:00", x, 96);
 
 	textAlign(RIGHT);
 	text("17:00", x + w, 96);
+	
+	textFont(f_Roboto);
 
 	// Zeitberrechnung
 
@@ -248,6 +264,7 @@ var timeLine = function(){
 }
 
 var timeLineStrahl = function(x, y){
+
 	noStroke();
 	fill(255);
 	rect(x - 8, y, 16, 8);
@@ -256,9 +273,10 @@ var timeLineStrahl = function(x, y){
 	line(x, 107, x, 107 + (5 * 126));
 	noStroke();
 
-	// CURRENT TIME
+	// CURRENT TIME	
 	textAlign(CENTER);
-	textSize(20);
+	textSize(20);	// wird warum auch immer ignoriert	
+	textFont("Arial");
 	if(currentTimeHours < 10){
 		if(currentTimeMinutes < 10){
 			text("0" + currentTimeHours + ":0" + currentTimeMinutes, x - 4, y - 24);
@@ -272,6 +290,7 @@ var timeLineStrahl = function(x, y){
 			text(currentTimeHours + ":" + currentTimeMinutes, x - 4, y - 24);
 		}
 	}
+	textFont(f_Roboto);
 	
 	textSize(12);
 
@@ -298,8 +317,9 @@ var timeLineStrahl = function(x, y){
 	text(productivity + "%", x + 16, ((y + 126) - (productivity) / 112 * 100) + 10 + ((currentDay - 1) * 124));
 	text(round(stress - 100) + "%", x + 16, ((y + 126) - ((stress - 100) / 112 * 100)) + 10 + ((currentDay - 1) * 124));
 	textSize(10);
-	text("\nProduktiviät", x + 16, ((y + 126) - (productivity) / 112 * 100) + 10 + ((currentDay - 1) * 124));
+	text("\nProduktiviaet", x + 16, ((y + 126) - (productivity) / 112 * 100) + 10 + ((currentDay - 1) * 124));
 	text("\nStress", x + 16, ((y + 126) - ((stress - 100) / 112 * 100)) + 10 + ((currentDay - 1) * 124));
+
 }
 
 var timeLineReset = function(){
@@ -345,20 +365,35 @@ var leftTop = function(){
 	// logo
 
 	// controls
+	textAlign(CENTER);
 	// left
-	if(editMode){		
+	if(editMode){
 		fill(c_yellow);
 	} else {
 		fill(c_verylightblue)
 	}
 	rect(0, 124, width / 100 * 6, 80);
+
+	// Icon
+	textFont(f_FontAwesome);
+	fill(255);
+	textSize(30);
+	text("", width / 100 * 3, 176);
+	textFont(f_Roboto);
 	// right
-	if(playMode){		
+	if(playMode){
 		fill(c_yellow);
 	} else {
 		fill(c_verylightblue)
 	}
 	rect(width / 100 * 6, 124, width / 100 * 6, 80);
+
+	// Icon
+	textFont(f_FontAwesome);
+	fill(255);
+	textSize(30);
+	text("", width / 100 * 9, 176);
+	textFont(f_Roboto);
 
 	// time control
 	// show only in play mode
@@ -367,7 +402,7 @@ var leftTop = function(){
 		rect(0, 212, width / 100 * 12, 40);
 
 		// buttons
-		// left
+		// left -- DELETE
 		if(mouseX > 0 && mouseX < width / 100 * 4 && mouseY > 212 && mouseY < 262){
 			// hover effect
 			fill(c_yellow);
@@ -380,8 +415,13 @@ var leftTop = function(){
 		}
 		// left content
 		rect(0, 212, width / 100 * 4, 40);
+		// Icon
+		textFont(f_FontAwesome);
+		fill(255);
+		textSize(18);
+		text("", width / 100 * 2, 238);
 
-		// middle
+		// middle -- PAUSE
 		if(mouseX > width / 100 * 4 && mouseX < width / 100 * 8 && mouseY > 212 && mouseY < 262){
 			// hover effect
 			fill(c_yellow);
@@ -394,8 +434,13 @@ var leftTop = function(){
 		}
 		// middle content
 		rect(width / 100 * 4, 212, width / 100 * 4, 40);
+		// Icon
+		textFont(f_FontAwesome);
+		fill(255);
+		textSize(18);
+		text("", width / 100 * 6, 238);
 
-		// right
+		// right -- PLAY
 		if(mouseX > width / 100 * 8 && mouseX < width / 100 * 12 && mouseY > 212 && mouseY < 262){
 			// hover effect
 			fill(c_yellow);
@@ -409,6 +454,12 @@ var leftTop = function(){
 		}
 		// right content
 		rect(width / 100 * 8, 212, width / 100 * 4, 40);
+		// Icon
+		textFont(f_FontAwesome);
+		fill(255);
+		textSize(18);
+		text("", width / 100 * 10, 238);
+		textFont(f_Roboto);
 	}
 }
 
@@ -479,11 +530,17 @@ var rightSidebar = function(){
 }
 
 var calcAblenkung = function(){
-	// Zufällige Ablenkung --> Ca alle 20 Minuten?
-	var newDistraction = round(random(0,ablenkung / 5));
-	if(newDistraction >= (ablenkung / 5) - 1){
+	// Zufällige Ablenkung --> Wahrscheinlichkeit abhängig von ablenkungFrequency --> 1 : ablenkungFrequency
+	var newDistraction = round(random(0, ablenkungFrequency));
+	console.log(newDistraction);
+	// Wenn die aF 0 ist = keine Ablenkung
+	if(ablenkungFrequency == 0){
+		return ablenkung;
+	}
+	// Wenn random(0, aF) >= aF dann neue Ablenkung
+	if(newDistraction >= ablenkungFrequency){
 		if(currentDay >= 1){
-			ablenkungen.push(new Ablenkung(days[currentDay-1].x + progress, days[currentDay - 1].y + days[currentDay-1].height - (productivity / 120 * 100)));
+			ablenkungen.push(new Ablenkung(days[currentDay-1].x + progress, days[currentDay - 1].y + 24)); // + days[currentDay-1].height - (productivity / 120 * 100)
 			ablenkung += 1;
 		}
 		// Die Produktivität fällt durch die Ablenkung
@@ -535,12 +592,19 @@ var calculation = function(){
 	calcStress();
 
 	// Einfluss der SRM
-	onSRM = false;
+
+	var SRMcheck = false;
+
 	for(var i = 0; i < srmArray.length; i++){
-		if(progress > srmArray[i].startTime * pxProMinute && progress < srmArray[i].endTime * pxProMinute && srmArray[i].day == days[currentDay-1]){
+		if(progress > srmArray[i].startTime * pxProMinute && progress < srmArray[i].endTime * pxProMinute && srmArray[i].day == days[currentDay-1] && onSRM == false){
 			srmArray[i].influence();
 			onSRM = true;
+			SRMcheck = true;
 		}
+	}
+
+	if(SRMcheck == false){
+		onSRM = false;
 	}
 
 	// Kein negativer Stress
